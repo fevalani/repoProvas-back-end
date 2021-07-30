@@ -7,6 +7,7 @@
     "test": "NODE_ENV=test npx jest -i",
     "build": "NODE_ENV=production npx tsc --outDir dist",
     "start": "NODE_ENV=production NODE_TLS_REJECT_UNAUTHORIZED=0 node dist/server.js",
+    "typeorm": "ts-node ./node_modules/typeorm/cli",
     "dev": "NODE_ENV=development npx nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node src/server.ts\""
   },
   "keywords": [],
@@ -19,6 +20,7 @@
     "@types/node": "^16.3.3",
     "@types/pg": "^8.6.1",
     "@types/supertest": "^2.0.11",
+    "faker": "^5.5.3",
     "jest": "^27.0.6",
     "nodemon": "^2.0.12",
     "supertest": "^6.1.3",
