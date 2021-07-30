@@ -1,16 +1,17 @@
 import { getRepository } from "typeorm";
 import Course from "../../src/entities/Course";
 import faker from "faker";
+import { insertSemester } from "./semesterFactory";
 
 export async function insertCourse() {
-  const course = createCourse();
-
-  await getRepository(Course).insert(course);
+  const course = await getRepository(Course).insert(await createCourse());
 
   return course;
 }
 
-export function createCourse() {
-  const course = { name: faker.name.firstName };
+export async function createCourse() {
+  const semesterId = (await insertSemester()).identifiers[0].id;
+  const name = faker.name.firstName();
+  const course = { name: `${name}`, semesterId: semesterId };
   return course;
 }

@@ -1,11 +1,11 @@
 import supertest from "supertest";
-import { getConnection } from "typeorm";
+import { getConnection, getRepository } from "typeorm";
 
 import app, { init } from "../../src/app";
-import { insertCategory } from "../factories/categoryFactory";
-import { insertCourse } from "../factories/courseFactory";
+import Category from "../../src/entities/Category";
+import Course from "../../src/entities/Course";
+import Professors from "../../src/entities/Professors";
 import { createExam, insertExam } from "../factories/examFactory";
-import { insertProfessor } from "../factories/professorFactory";
 import { clearDatabase } from "../utils/database";
 
 beforeAll(async () => {
@@ -22,52 +22,82 @@ afterAll(async () => {
 
 describe("POST /send/exam", () => {
   it("should answer status 201", async () => {
-    const exam = createExam();
-    await insertCategory();
-    await insertCourse();
-    await insertProfessor();
+    const exam = await createExam();
 
     const response = await supertest(app).post("/send/exam").send(exam);
 
     expect(response.status).toBe(201);
   });
 
-  it("should answer status 400 for any empty param", async () => {
-    const exam = createExam();
-
-    const num = Math.random();
-
-    if (num < 0.2) {
-      exam.categoryId = null;
-    } else if (num < 0.4) {
-      exam.courseId = null;
-    } else if (num < 0.6) {
-      exam.examUrl = " ";
-    } else if (num < 0.8) {
-      exam.name = " ";
-    } else {
-      exam.professorId = null;
-    }
-    await insertCategory();
-    await insertCourse();
-    await insertProfessor();
+  it("should answer status 400 for any empty examUrl", async () => {
+    const exam = await createExam();
+    exam.examUrl = " ";
 
     const response = await supertest(app).post("/send/exam").send(exam);
 
     expect(response.status).toBe(400);
   });
 
-  it("should answer status 401 for unexist category, course or professor", async () => {
-    const exam = createExam();
-    const num = Math.random();
+  it("should answer status 400 for any empty category", async () => {
+    const exam = await createExam();
+    exam.categoryId = null;
 
-    if (num < 0.33) {
-      exam.categoryId = 1000;
-    } else if (num < 0.66) {
-      exam.courseId = 1000;
-    } else {
-      exam.professorId = 1000;
-    }
+    const response = await supertest(app).post("/send/exam").send(exam);
+
+    expect(response.status).toBe(400);
+  });
+
+  it("should answer status 400 for any empty professor", async () => {
+    const exam = await createExam();
+    exam.professorId = null;
+
+    const response = await supertest(app).post("/send/exam").send(exam);
+
+    expect(response.status).toBe(400);
+  });
+
+  it("should answer status 400 for any empty course", async () => {
+    const exam = await createExam();
+    exam.courseId = null;
+
+    const response = await supertest(app).post("/send/exam").send(exam);
+
+    expect(response.status).toBe(400);
+  });
+
+  it("should answer status 400 for any empty name", async () => {
+    const exam = await createExam();
+    exam.name = " ";
+
+    const response = await supertest(app).post("/send/exam").send(exam);
+
+    expect(response.status).toBe(400);
+  });
+
+  it("should answer status 401 for unexist category", async () => {
+    const exam = await createExam();
+
+    await getRepository(Category).delete({});
+
+    const response = await supertest(app).post("/send/exam").send(exam);
+
+    expect(response.status).toBe(401);
+  });
+
+  it("should answer status 401 for unexist course", async () => {
+    const exam = await createExam();
+
+    await getRepository(Course).delete({});
+
+    const response = await supertest(app).post("/send/exam").send(exam);
+
+    expect(response.status).toBe(401);
+  });
+
+  it("should answer status 401 for unexist professor", async () => {
+    const exam = await createExam();
+
+    await getRepository(Professors).delete({});
 
     const response = await supertest(app).post("/send/exam").send(exam);
 
@@ -75,12 +105,16 @@ describe("POST /send/exam", () => {
   });
 
   it("should answer status 409 for exists exam", async () => {
-    await insertCategory();
-    await insertCourse();
-    await insertProfessor();
     const exam = await insertExam();
+    const newBody = {
+      name: exam.name,
+      categoryId: exam.categoryId,
+      courseId: exam.courseId,
+      examUrl: exam.examUrl,
+      professorId: exam.professorId,
+    };
 
-    const response = await supertest(app).post("/send/exam").send(exam);
+    const response = await supertest(app).post("/send/exam").send(newBody);
 
     expect(response.status).toBe(409);
   });

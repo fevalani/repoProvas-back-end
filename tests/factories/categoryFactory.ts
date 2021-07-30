@@ -2,9 +2,7 @@ import { getRepository } from "typeorm";
 import Category from "../../src/entities/Category";
 
 export async function insertCategory() {
-  const category = createCategory();
-
-  await getRepository(Category).insert(category);
+  const category = await getRepository(Category).insert(createCategory());
 
   return category;
 }

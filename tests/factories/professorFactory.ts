@@ -3,14 +3,13 @@ import Professors from "../../src/entities/Professors";
 import faker from "faker";
 
 export async function insertProfessor() {
-  const professor = createProfessor();
-
-  await getRepository(Professors).insert(professor);
+  const professor = await getRepository(Professors).insert(createProfessor());
 
   return professor;
 }
 
 export function createProfessor() {
-  const professor = { name: faker.name.firstName };
+  const name = faker.name.firstName();
+  const professor = { name: `${name}` };
   return professor;
 }
