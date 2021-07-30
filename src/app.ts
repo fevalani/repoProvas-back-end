@@ -14,6 +14,8 @@ app.use(express.json());
 
 app.post("/send/exam", examController.postExam);
 
+app.get("/send/exam", examController.getExam);
+
 export async function init() {
   await connectDatabase();
 }

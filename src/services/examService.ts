@@ -28,8 +28,8 @@ export async function testIfExistsParams(
   const course = await getRepository(Course).findOne(courseId);
 
   if (!category || !professor || !course) {
-    return false;
-  } else {
     return true;
+  } else {
+    return false;
   }
 }

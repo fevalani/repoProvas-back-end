@@ -2,7 +2,10 @@ import supertest from "supertest";
 import { getConnection } from "typeorm";
 
 import app, { init } from "../../src/app";
+import { insertCategory } from "../factories/categoryFactory";
+import { insertCourse } from "../factories/courseFactory";
 import { createExam, insertExam } from "../factories/examFactory";
+import { insertProfessor } from "../factories/professorFactory";
 import { clearDatabase } from "../utils/database";
 
 beforeAll(async () => {
@@ -20,6 +23,9 @@ afterAll(async () => {
 describe("POST /send/exam", () => {
   it("should answer status 201", async () => {
     const exam = createExam();
+    await insertCategory();
+    await insertCourse();
+    await insertProfessor();
 
     const response = await supertest(app).post("/send/exam").send(exam);
 
@@ -42,6 +48,9 @@ describe("POST /send/exam", () => {
     } else {
       exam.professorId = null;
     }
+    await insertCategory();
+    await insertCourse();
+    await insertProfessor();
 
     const response = await supertest(app).post("/send/exam").send(exam);
 
@@ -66,6 +75,9 @@ describe("POST /send/exam", () => {
   });
 
   it("should answer status 409 for exists exam", async () => {
+    await insertCategory();
+    await insertCourse();
+    await insertProfessor();
     const exam = await insertExam();
 
     const response = await supertest(app).post("/send/exam").send(exam);
