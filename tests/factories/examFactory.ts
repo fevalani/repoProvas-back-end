@@ -1,5 +1,5 @@
 import { getRepository } from "typeorm";
-import Faker from "faker";
+import faker from "faker";
 import Exams from "../../src/entities/Exams";
 
 export function createExam() {
