@@ -1,4 +1,12 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import Course from "./Course";
 import Exams from "./Exams";
 
 @Entity("professors")
@@ -11,4 +19,8 @@ export default class Professors {
 
   @OneToMany(() => Exams, (exam) => exam.professor)
   exams: Exams[];
+
+  @ManyToMany(() => Course)
+  @JoinTable()
+  course: Course[];
 }
