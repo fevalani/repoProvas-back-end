@@ -6,9 +6,9 @@ import { insertCourse } from "./courseFactory";
 import { insertProfessor } from "./professorFactory";
 
 export async function createExam() {
-  const categoryId = (await insertCategory()).identifiers[0].id;
-  const courseId = (await insertCourse()).identifiers[0].id;
-  const professorId = (await insertProfessor()).identifiers[0].id;
+  const categoryId: Number = (await insertCategory()).identifiers[0].id;
+  const courseId: Number = (await insertCourse()).identifiers[0].id;
+  const professorId: Number = (await insertProfessor()).identifiers[0].id;
 
   const exam = {
     name: "2020.1",

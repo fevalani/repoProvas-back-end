@@ -5,6 +5,8 @@ import app, { init } from "../../src/app";
 import Category from "../../src/entities/Category";
 import Course from "../../src/entities/Course";
 import Professors from "../../src/entities/Professors";
+import { insertCategory } from "../factories/categoryFactory";
+import { insertCourse } from "../factories/courseFactory";
 import { createExam, insertExam } from "../factories/examFactory";
 import { clearDatabase } from "../utils/database";
 
@@ -117,5 +119,51 @@ describe("POST /send/exam", () => {
     const response = await supertest(app).post("/send/exam").send(newBody);
 
     expect(response.status).toBe(409);
+  });
+});
+
+describe("GET /get/course", () => {
+  it("should answer status 200 if get all courses", async () => {
+    const num = Math.floor(Math.random() * 10) || 1;
+
+    for (let i = 0; i < num; i++) {
+      await insertCourse();
+    }
+
+    const response = await supertest(app).get("/get/course");
+
+    expect(response.status).toBe(200);
+    expect(response.body.length).toEqual(num);
+    expect(response.body).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: expect.any(Number),
+          name: expect.any(String),
+        }),
+      ])
+    );
+  });
+});
+
+describe("GET /get/all/categories", () => {
+  it("should answer status 200 if get all categories", async () => {
+    const num = Math.floor(Math.random() * 10) || 1;
+
+    for (let i = 0; i < num; i++) {
+      await insertCategory();
+    }
+
+    const response = await supertest(app).get("/get/all/categories");
+
+    expect(response.status).toBe(200);
+    expect(response.body.length).toEqual(num);
+    expect(response.body).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: expect.any(Number),
+          name: expect.any(String),
+        }),
+      ])
+    );
   });
 });
