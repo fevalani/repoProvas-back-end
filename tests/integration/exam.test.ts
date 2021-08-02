@@ -1,3 +1,4 @@
+import { isRef } from "joi";
 import supertest from "supertest";
 import { getConnection, getRepository } from "typeorm";
 
@@ -6,8 +7,9 @@ import Category from "../../src/entities/Category";
 import Course from "../../src/entities/Course";
 import Professors from "../../src/entities/Professors";
 import { insertCategory } from "../factories/categoryFactory";
-import { insertCourse } from "../factories/courseFactory";
+import { getCourseId, insertCourse } from "../factories/courseFactory";
 import { createExam, insertExam } from "../factories/examFactory";
+import { insertProfessor } from "../factories/professorFactory";
 import { clearDatabase } from "../utils/database";
 
 beforeAll(async () => {
@@ -165,5 +167,24 @@ describe("GET /get/all/categories", () => {
         }),
       ])
     );
+  });
+});
+
+describe("/get/professors/course/:id", () => {
+  it("should answer status 200 if get all professors who teaching course(byId)", async () => {
+    const num = Math.floor(Math.random() * 10) || 1;
+
+    for (let i = 0; i < num; i++) {
+      await insertProfessor();
+    }
+    const existCourseId = await getCourseId();
+
+    const response = await supertest(app).get(
+      `/get/professors/course/${existCourseId}`
+    );
+
+    console.log(response.body);
+
+    expect(response.status).toBe(200);
   });
 });

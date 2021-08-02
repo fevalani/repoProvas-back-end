@@ -15,3 +15,8 @@ export async function createCourse() {
   const course = { name: `${name}`, semesterId: semesterId };
   return course;
 }
+
+export async function getCourseId() {
+  const course = await getRepository(Course).findOne();
+  return course.id;
+}
